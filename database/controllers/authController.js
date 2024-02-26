@@ -10,6 +10,20 @@ require("dotenv").config();
 exports.auth_index = asyncHandler(async (req, res, next) => {
   res.status(200).json({ msg: "API publica" });
 });
+// Display private user
+exports.auth_index_private = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+
+  // Check if user exists.
+  const user = await User.findById(id, "-password");
+
+  if (!user) {
+    res.status(404).json({ msg: "Usuário não encontrado" });
+  }
+
+  res.status(200).json({ user });
+});
+
 // Display auth create form on Post.
 exports.auth_create_post = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmpassword } = await req.body;
