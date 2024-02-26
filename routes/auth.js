@@ -4,8 +4,6 @@ const router = express.Router();
 /// AUTH ROUTES ///
 
 /* GET public route. */
-router.get("/", function (req, res, next) {
-  res.status(200).json({ msg: "API publica" });
-});
+router.get("/", auth_controller.auth_index);
 
 module.exports = router;
