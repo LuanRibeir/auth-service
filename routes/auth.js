@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
+// Require controller modules.
+const auth_controller = require("../database/controllers/authController");
+
+// Require middlewares.
+const checkToken_middleware = require("./middlewares/checkToken");
+
 /// AUTH ROUTES ///
 
 /* GET public route. */
