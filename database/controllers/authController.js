@@ -10,6 +10,7 @@ require("dotenv").config();
 exports.auth_index = asyncHandler(async (req, res, next) => {
   res.status(200).json({ msg: "API publica" });
 });
+
 // Display private user
 exports.auth_index_private = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
@@ -69,6 +70,48 @@ exports.auth_create_post = asyncHandler(async (req, res, next) => {
     await user.save();
 
     res.status(201).json({ msg: "Usuário criado com sucesso!" });
+  } catch (err) {
+    res.status(500).json({ msg: "Erro no servidor!" });
+  }
+});
+
+// Display auth login form on Post.
+exports.auth_login_post = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    // No results.
+    return res.status(422).json({ msg: "Email é obrigatório!" });
+  }
+  if (!password) {
+    // No results.
+    return res.status(422).json({ msg: "Senha é obrigatório!" });
+  }
+
+  const user = await User.findOne({ email: email });
+
+  // Check if user exits.
+  if (!user) {
+    return res.status(404).json({ msg: "Usuário não encontrado!" });
+  }
+
+  // Check if password match.
+  const checkPassword = await bcrypt.compare(password, user.password);
+  if (!checkPassword) {
+    return res.status(422).json({ msg: "Senha inválida!" });
+  }
+
+  // Create Token
+  try {
+    const secret = process.env.SECRET;
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      secret,
+    );
+
+    res.status(200).json({ msg: "Autenticação realizada com sucesso:", token });
   } catch (err) {
     res.status(500).json({ msg: "Erro no servidor!" });
   }
